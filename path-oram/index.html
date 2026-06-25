@@ -97,9 +97,9 @@
 </head>
 <body>
   <h1>Path ORAM <small>— live simulator</small></h1>
-  <p class="sub">An upside-down binary tree of buckets (root on top, leaves on the bottom). Every logical
+  <p class="sub">A binary tree of buckets drawn the ORAM way — root at the bottom, leaves on top. Every logical
     access reads a full root-to-leaf path into the stash, remaps the block to a fresh random leaf, and evicts
-    blocks back down as deep as they will go. The server only ever sees a uniformly random path.</p>
+    blocks back toward their leaves as deep as they will go. The server only ever sees a uniformly random path.</p>
 
   <div class="bar">
     <div class="grp">
@@ -172,7 +172,7 @@ const hue = b => (b*53)%360;
 const cloneS = s => ({tree:s.tree.map(r=>r.map(b=>b.slice())), stash:s.stash.slice(), pos:s.pos.slice()});
 
 // ---- geometry ----
-function bucketTop(l){ return TOPPAD + l*levelGap; }
+function bucketTop(l){ return TOPPAD + (L-l)*levelGap; }   // root at the bottom, leaves on top (ORAM convention)
 function center(l,i){ return { x:(i+0.5)*(treeW/(2**l)), y:bucketTop(l)+bucketH/2 }; }
 function slotCenter(l,i,s){ const c=center(l,i); return { x:c.x, y:bucketTop(l)+PAD+SLOT/2+s*SLOT }; }
 let stashPerCol;
@@ -231,7 +231,7 @@ function buildWorld(){
   // leaf labels
   for(let i=0;i<leaves;i++){
     const c=center(L,i); const t=document.createElement('div'); t.className='leaflab';
-    t.style.left=c.x+'px'; t.style.top=(bucketTop(L)+bucketH+6)+'px'; t.textContent=i;
+    t.style.left=c.x+'px'; t.style.top=(bucketTop(L)-17)+'px'; t.textContent=i;
     stage.appendChild(t);
   }
   // chips (one per block, persistent for FLIP animation)
@@ -275,14 +275,14 @@ function buildAccess(a){
   const nx=randLeaf(); w.pos[a]=nx;
   out.push(snap(w,{posHi:a,path:x,newPath:nx,ribbons:[a]},`Remap #${a} to a fresh random leaf ${nx}: its assigned-path trail jumps to P(${nx}). We still read the old path P(${x}).`));
   for(let l=0;l<=L;l++){ const i=anc(x,l); w.stash.push(...w.tree[l][i]); w.tree[l][i]=[]; }
-  out.push(snap(w,{path:x,stashHi:true,motion:'up',ribbons:[a]},`Read path P(${x}): every block on it climbs its own path up into the stash.`));
+  out.push(snap(w,{path:x,stashHi:true,motion:'up',ribbons:[a]},`Read path P(${x}): every block on it is pulled along its own path into the stash.`));
   out.push(snap(w,{path:x,chip:a,ribbons:[a]},`Block #${a} is now in the stash — read or update its data here.`));
   for(let l=L;l>=0;l--){
     const i=anc(x,l); const chosen=[];
     for(const b of w.stash){ if(chosen.length>=Z) break; if(anc(w.pos[b],l)===i) chosen.push(b); }
     const set=new Set(chosen); w.stash=w.stash.filter(b=>!set.has(b)); w.tree[l][i]=chosen;
     out.push(snap(w,{path:x,bucket:[l,i],chip:a,motion:'down',ribbons:[a,...chosen]},
-      `Write back · level ${l}: each block slides down the read path only as far as its own assigned path (its colour) still follows — then it parks.`));
+      `Write back · level ${l}: each block follows the read path back only as far as its own assigned path (its colour) still agrees — then it parks.`));
   }
   out.push(snap(w,{path:x,done:true,observed:x,ribbons:[a]},`Done. Every block sits back on its own assigned path; the server only saw a read of the random path P(${x}). Stash size: ${w.stash.length}.`));
   return out;
