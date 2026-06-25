@@ -4,95 +4,110 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Path ORAM — live simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg0:#0a0e1a; --bg1:#111a30; --ink:#e8eefc; --muted:#8ea2c8;
-    --accent:#5cc8ff; --accent2:#7CFFB2; --warn:#ffb454; --hot:#ff7a9c;
-    --panel:rgba(255,255,255,.04); --panelb:rgba(255,255,255,.10);
+    --ink:#3b4a3f; --muted:#86998a; --line:#cdd9c8;
+    --card:#fbfaf3; --cardb:#d6e0cc;
+    --branch:#c4aa8b; --leaf:#9fce9a; --leaf-d:#5aa166;
+    --sun:#f3cf7e; --sun-d:#e0b452; --blossom:#e9a7be; --peach:#f2b58e; --hot:#e2785f;
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
   body{
     background:
-      radial-gradient(1200px 700px at 20% -10%, #16223f 0%, transparent 60%),
-      radial-gradient(900px 600px at 100% 0%, #1a2747 0%, transparent 55%),
-      linear-gradient(180deg,var(--bg0),#070a14);
+      radial-gradient(820px 440px at 50% -9%, #fdf4d2 0%, rgba(253,244,210,0) 62%),
+      linear-gradient(180deg,#e8f3e9 0%,#eef4e3 44%,#f3ecdd 100%);
+    background-attachment:fixed;
     color:var(--ink);
-    font:14px/1.45 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    padding:18px 22px 40px;
+    font:15px/1.5 "Nunito",ui-rounded,system-ui,sans-serif;
+    padding:20px 24px 44px;
   }
-  h1{font-size:20px;margin:0 0 2px;letter-spacing:.3px}
-  h1 small{color:var(--muted);font-weight:500;font-size:13px}
-  .sub{color:var(--muted);margin:0 0 16px;font-size:13px}
-  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
-  .bar .grp{display:flex;gap:8px;align-items:center;background:var(--panel);
-    border:1px solid var(--panelb);border-radius:12px;padding:7px 11px}
-  label{color:var(--muted);font-size:12px}
-  select,input[type=range]{accent-color:var(--accent)}
-  select{background:#0e1730;color:var(--ink);border:1px solid var(--panelb);
-    border-radius:8px;padding:5px 8px;font:inherit}
-  button{cursor:pointer;border:1px solid var(--panelb);color:var(--ink);
-    background:#17223e;
-    border-radius:10px;padding:8px 13px;font:inherit;font-weight:600;transition:.15s}
-  button:hover{border-color:var(--accent);box-shadow:0 0 0 2px rgba(92,200,255,.15)}
-  button.primary{background:linear-gradient(180deg,#1e6fff,#1657d6);border-color:#3b82f6}
-  button.primary:hover{box-shadow:0 0 18px rgba(59,130,246,.5)}
-  button.on{background:linear-gradient(180deg,#129e6b,#0c7d54);border-color:#15b97e}
-  button:disabled{opacity:.4;cursor:default;box-shadow:none}
-  .caption{min-height:40px;background:var(--panel);border:1px solid var(--panelb);
-    border-left:3px solid var(--accent);border-radius:10px;padding:9px 14px;margin-bottom:12px;
-    font-size:14px;display:flex;align-items:center;gap:10px}
-  .caption .step{color:var(--accent);font-variant-numeric:tabular-nums;font-weight:700;
-    background:rgba(92,200,255,.12);border-radius:7px;padding:2px 8px;font-size:12px}
-  .stagewrap{overflow:auto;border:1px solid var(--panelb);border-radius:16px;
-    background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.18));padding:6px}
+  h1{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:30px;margin:0 0 2px;color:#36433a}
+  h1 small{font-family:"Nunito";color:var(--muted);font-weight:600;font-size:14px}
+  .sub{color:var(--muted);margin:0 0 18px;font-size:14px}
+  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+  .bar .grp{display:flex;gap:8px;align-items:center;background:var(--card);
+    border:1px solid var(--cardb);border-radius:14px;padding:7px 11px;
+    box-shadow:0 2px 8px rgba(120,140,110,.10)}
+  label{color:var(--muted);font-size:13px;font-weight:600}
+  select,input[type=range]{accent-color:var(--leaf-d)}
+  select{background:#fff;color:var(--ink);border:1px solid var(--cardb);
+    border-radius:9px;padding:5px 8px;font:inherit;font-weight:600}
+  button{cursor:pointer;border:1px solid var(--cardb);color:var(--ink);background:#fff;
+    border-radius:11px;padding:8px 14px;font:inherit;font-weight:700;transition:.15s;
+    box-shadow:0 1px 3px rgba(120,140,110,.12)}
+  button:hover{border-color:var(--leaf-d);transform:translateY(-1px);
+    box-shadow:0 4px 10px rgba(95,166,106,.22)}
+  button.primary{background:var(--leaf);border-color:var(--leaf-d);color:#1f3a26}
+  button.primary:hover{background:#92c98d;box-shadow:0 5px 14px rgba(95,166,106,.35)}
+  button.on{background:var(--leaf-d);border-color:#4e9059;color:#f3faef}
+  button:disabled{opacity:.45;cursor:default;box-shadow:none;transform:none}
+  .caption{min-height:40px;background:var(--card);border:1px solid var(--cardb);
+    border-left:4px solid var(--sun);border-radius:13px;padding:10px 15px;margin-bottom:14px;
+    font-size:15px;display:flex;align-items:center;gap:11px;
+    box-shadow:0 2px 10px rgba(120,140,110,.10)}
+  .caption .step{color:#9a7a1f;font-variant-numeric:tabular-nums;font-weight:800;
+    background:#fbeec6;border-radius:8px;padding:2px 9px;font-size:12px}
+  .stagewrap{overflow:auto;border:1px solid var(--cardb);border-radius:22px;
+    background:linear-gradient(180deg,#edf6ec 0%,#eef4e2 52%,#efe7d3 100%);
+    box-shadow:inset 0 2px 14px rgba(120,140,110,.10),0 8px 26px rgba(120,140,110,.12);padding:8px}
   #stage{position:relative}
-  svg.edges{position:absolute;left:0;top:0;pointer-events:none;z-index:0}
-  svg.ribbons{position:absolute;left:0;top:0;pointer-events:none;z-index:2}
-  svg.edges line{stroke:rgba(255,255,255,.16);stroke-width:2;transition:.35s}
-  svg.edges line.on{stroke:var(--accent);stroke-width:3.5;
-    filter:drop-shadow(0 0 6px rgba(92,200,255,.9))}
-  .bucket{position:absolute;z-index:1;border:1.5px solid rgba(255,255,255,.18);
-    border-radius:9px;background:rgba(255,255,255,.025);transition:.3s;overflow:hidden}
-  .bucket .slot{position:absolute;left:0;right:0;border-top:1px dashed rgba(255,255,255,.10)}
-  .bucket.on-path{border-color:var(--accent);background:rgba(92,200,255,.12);
-    box-shadow:0 0 16px rgba(92,200,255,.35), inset 0 0 18px rgba(92,200,255,.08)}
-  .bucket.new-path{border-color:var(--accent2);border-style:dashed;
-    background:rgba(124,255,178,.08);box-shadow:0 0 14px rgba(124,255,178,.25)}
-  .bucket.active{border-color:var(--warn);background:rgba(255,180,84,.16);
-    box-shadow:0 0 22px rgba(255,180,84,.5)}
-  .leaflab{position:absolute;color:var(--muted);font-size:11px;text-align:center;
+  svg.edges{position:absolute;left:0;top:0;pointer-events:none;z-index:1}
+  svg.ribbons{position:absolute;left:0;top:0;pointer-events:none;z-index:3}
+  svg.edges line{stroke:var(--branch);stroke-linecap:round;transition:.35s}
+  svg.edges line.on{stroke:var(--sun-d);filter:drop-shadow(0 0 5px rgba(243,207,126,.9))}
+  .ground{position:absolute;left:0;z-index:0;
+    background:linear-gradient(180deg,rgba(208,188,150,0) 0%,#e7d8b6 38%,#e0cda6 100%);
+    border-top:2px solid rgba(170,150,110,.30)}
+  .trunk{position:absolute;z-index:0;border-radius:0 0 8px 8px;
+    background:linear-gradient(90deg,#b89472,#caa482 45%,#b89472)}
+  .bucket{position:absolute;z-index:2;border:1.5px solid var(--cardb);border-radius:12px;
+    background:var(--card);transition:.3s;overflow:hidden;box-shadow:0 3px 8px rgba(120,140,110,.13)}
+  .bucket .slot{position:absolute;left:0;right:0;border-top:1px dashed rgba(140,165,135,.30)}
+  .bucket.on-path{border-color:var(--sun-d);background:#fdf4d6;
+    box-shadow:0 0 0 3px rgba(243,207,126,.5),0 5px 14px rgba(224,180,82,.32)}
+  .bucket.new-path{border-color:var(--blossom);border-style:dashed;
+    background:#fcebf1;box-shadow:0 4px 12px rgba(233,167,190,.30)}
+  .bucket.active{border-color:var(--leaf-d);background:#e6f5e3;
+    box-shadow:0 0 0 3px rgba(159,206,154,.55),0 5px 16px rgba(90,161,102,.35)}
+  .leaflab{position:absolute;color:var(--muted);font-size:12px;font-weight:700;text-align:center;
     font-variant-numeric:tabular-nums;transform:translateX(-50%)}
-  .panelbox{position:absolute;border:1.5px solid var(--panelb);border-radius:12px;
-    background:rgba(124,180,255,.05);}
-  .panelbox .ttl{position:absolute;top:8px;left:0;right:0;text-align:center;
-    color:var(--muted);font-size:11px;letter-spacing:2px;font-weight:700}
-  .panelbox.glow{border-color:var(--accent);box-shadow:0 0 22px rgba(92,200,255,.35)}
+  .panelbox{position:absolute;z-index:2;border:1.5px solid var(--cardb);border-radius:16px;
+    background:rgba(251,250,241,.82)}
+  .panelbox .ttl{position:absolute;top:9px;left:0;right:0;text-align:center;
+    color:var(--muted);font-size:11px;letter-spacing:2.5px;font-weight:800}
+  .panelbox.glow{border-color:var(--sun-d);
+    box-shadow:0 0 0 3px rgba(243,207,126,.40),0 6px 18px rgba(224,180,82,.30)}
   #chips{position:absolute;left:0;top:0;pointer-events:none;z-index:5}
   .chip{position:absolute;display:flex;align-items:center;justify-content:center;
-    font-size:11px;font-weight:700;color:#06101f;border-radius:7px;
-    pointer-events:auto;cursor:pointer;
-    box-shadow:0 2px 6px rgba(0,0,0,.4);
+    font-size:11px;font-weight:800;color:#41463f;border-radius:11px 11px 11px 4px;
+    pointer-events:auto;cursor:pointer;border:1px solid rgba(255,255,255,.55);
+    box-shadow:0 2px 5px rgba(90,110,80,.22),inset 0 1px 0 rgba(255,255,255,.55);
     transition:transform .42s cubic-bezier(.5,.05,.2,1), box-shadow .3s, outline-color .3s;
     will-change:transform;outline:2px solid transparent}
-  .chip.accent{outline-color:#fff;box-shadow:0 0 18px 3px rgba(255,255,255,.85);z-index:6}
-  .chip:hover{outline-color:rgba(255,255,255,.7)}
-  .chip .sub{font-size:8px;opacity:.75;margin-left:2px}
-  .grids{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+  .chip.accent{outline-color:#fff;
+    box-shadow:0 0 0 3px rgba(243,207,126,.9),0 4px 12px rgba(224,180,82,.55);z-index:6}
+  .chip:hover{outline-color:#fff}
+  .chip .sub{font-size:8px;opacity:.7;margin-left:2px}
+  .grids{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
   @media(max-width:820px){.grids{grid-template-columns:1fr}}
-  .card{background:var(--panel);border:1px solid var(--panelb);border-radius:14px;padding:12px 14px}
-  .card h3{margin:0 0 9px;font-size:12px;letter-spacing:1.5px;color:var(--muted);font-weight:700}
+  .card{background:var(--card);border:1px solid var(--cardb);border-radius:16px;padding:13px 15px;
+    box-shadow:0 3px 10px rgba(120,140,110,.10)}
+  .card h3{margin:0 0 10px;font-size:12px;letter-spacing:1.5px;color:var(--muted);font-weight:800}
   .pmap{display:flex;flex-wrap:wrap;gap:6px}
-  .pmap .pm{font-size:11px;background:#0e1730;border:1px solid var(--panelb);
-    border-radius:7px;padding:3px 7px;font-variant-numeric:tabular-nums;transition:.2s}
-  .pmap .pm b{color:var(--accent2)}
-  .pmap .pm.hot{border-color:#fff;background:#21304f;box-shadow:0 0 10px rgba(255,255,255,.4)}
+  .pmap .pm{font-size:12px;background:#f6f3e6;border:1px solid var(--cardb);
+    border-radius:8px;padding:3px 8px;font-variant-numeric:tabular-nums;transition:.2s}
+  .pmap .pm b{color:var(--leaf-d)}
+  .pmap .pm.hot{border-color:var(--sun-d);background:#fbeec6;box-shadow:0 0 0 2px rgba(243,207,126,.45)}
   .patlog{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-  .patlog .pl{font-size:11px;font-variant-numeric:tabular-nums;background:#0e1730;
-    border:1px solid var(--panelb);border-radius:7px;padding:3px 8px}
-  .patlog .pl:last-child{border-color:var(--accent);color:var(--accent)}
-  .hint{color:var(--muted);font-size:12px;margin-top:6px}
-  .dot{width:9px;height:9px;border-radius:3px;display:inline-block;vertical-align:-1px}
+  .patlog .pl{font-size:12px;font-variant-numeric:tabular-nums;background:#f6f3e6;
+    border:1px solid var(--cardb);border-radius:8px;padding:3px 9px}
+  .patlog .pl:last-child{border-color:var(--sun-d);color:#9a7a1f;background:#fbeec6}
+  .hint{color:var(--muted);font-size:13px;margin-top:8px}
+  .dot{width:10px;height:10px;border-radius:4px;display:inline-block;vertical-align:-1px}
 </style>
 </head>
 <body>
@@ -142,11 +157,11 @@
       <h3>ACCESS PATTERN &nbsp;<span style="color:#5a6f96;font-weight:500;text-transform:none;letter-spacing:0">the leaf the server observes each access</span></h3>
       <div class="patlog" id="patlog"><span class="hint">— nothing observed yet —</span></div>
       <div class="hint" style="margin-top:10px">
-        <span class="dot" style="background:var(--accent)"></span> read path P(x) &nbsp;
-        <span class="dot" style="background:var(--accent2)"></span> new path P(x′) &nbsp;
-        <span class="dot" style="background:var(--warn)"></span> bucket being written &nbsp;
-        <span class="dot" style="background:#fff"></span> the accessed block &nbsp;
-        <span class="dot" style="background:linear-gradient(90deg,#ff8ab3,#7CFFB2)"></span> a block's assigned path — <b>hover</b> any block to trace it, <b>click</b> to access
+        <span class="dot" style="background:var(--sun)"></span> read path P(x) — sunlight &nbsp;
+        <span class="dot" style="background:var(--blossom)"></span> new path P(x′) &nbsp;
+        <span class="dot" style="background:var(--leaf)"></span> bucket being written &nbsp;
+        <span class="dot" style="background:#fff;box-shadow:0 0 0 2px var(--sun-d) inset"></span> the accessed block &nbsp;
+        <span class="dot" style="background:linear-gradient(90deg,#e7a6c0,#a9d6a4)"></span> a block's assigned path — <b>hover</b> any block to trace it, <b>click</b> to access
       </div>
     </div>
   </div>
@@ -200,7 +215,7 @@ function buildWorld(){
   ribbonSvg=document.createElementNS(SVGNS,'svg'); ribbonSvg.setAttribute('class','ribbons');
   ribbonSvg.setAttribute('width',stageW); ribbonSvg.setAttribute('height',stageH);
   stage.insertBefore(ribbonSvg, chipsLayer);
-  [...stage.querySelectorAll('.bucket,.leaflab,.panelbox')].forEach(e=>e.remove());
+  [...stage.querySelectorAll('.bucket,.leaflab,.panelbox,.ground,.trunk')].forEach(e=>e.remove());
   bucketEls={}; edgeEls={}; chipEls={};
 
   // stash panel
@@ -218,6 +233,7 @@ function buildWorld(){
         const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
         ln.setAttribute('x1',c.x);ln.setAttribute('y1',c.y);
         ln.setAttribute('x2',p.x);ln.setAttribute('y2',p.y);
+        ln.setAttribute('stroke-width',(1.6+(L-l)*1.5).toFixed(1));   // branches thicken toward the trunk
         edgesSvg.appendChild(ln); edgeEls[l+'-'+i]=ln;
       }
       const b=document.createElement('div'); b.className='bucket';
@@ -234,11 +250,22 @@ function buildWorld(){
     t.style.left=c.x+'px'; t.style.top=(bucketTop(L)-17)+'px'; t.textContent=i;
     stage.appendChild(t);
   }
+  // soil + trunk anchoring the tree to the ground (root is at the bottom)
+  const gy=bucketTop(0)+bucketH-4;
+  const ground=document.createElement('div'); ground.className='ground';
+  ground.style.left='0'; ground.style.top=gy+'px';
+  ground.style.width=stageW+'px'; ground.style.height=(stageH-gy)+'px';
+  stage.appendChild(ground);
+  const rc=center(0,0), tw=Math.max(10,BW*0.5);
+  const trunk=document.createElement('div'); trunk.className='trunk';
+  trunk.style.left=(rc.x-tw/2)+'px'; trunk.style.top=(bucketTop(0)+bucketH-3)+'px';
+  trunk.style.width=tw+'px'; trunk.style.height='28px';
+  stage.appendChild(trunk);
   // chips (one per block, persistent for FLIP animation)
   for(let b=0;b<N;b++){
     const el=document.createElement('div'); el.className='chip';
     el.style.width=CHIPW+'px'; el.style.height=CHIPH+'px';
-    el.style.background=`hsl(${hue(b)} 78% 62%)`;
+    el.style.background=`hsl(${hue(b)} 56% 80%)`;
     el.innerHTML=`#${b}<span class="sub" data-sub></span>`;
     el.onmouseenter=()=>{hoverBlock=b; drawRibbons();};
     el.onmouseleave=()=>{hoverBlock=null; drawRibbons();};
@@ -347,7 +374,7 @@ function drawRibbons(){
   ribbonSvg.innerHTML='';
   const one=(b,strong)=>{ const leaf=curSnap.pos[b]; let d='';
     for(let l=0;l<=L;l++){ const c=center(l,anc(leaf,l)); d+=(l?'L':'M')+c.x+' '+c.y+' '; }
-    const col=`hsl(${hue(b)} 88% 62%)`;
+    const col=`hsl(${hue(b)} 52% 64%)`;
     const mk=(w,op)=>{ const p=document.createElementNS(SVGNS,'path'); p.setAttribute('d',d);
       p.setAttribute('fill','none'); p.setAttribute('stroke',col);
       p.setAttribute('stroke-linecap','round'); p.setAttribute('stroke-linejoin','round');
